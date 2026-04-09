@@ -113,11 +113,11 @@ fn val_to_string(v: &serde_json::Value) -> String {
 fn score_color(s: &str) -> egui::Color32 {
     let trimmed = s.trim();
     if trimmed.starts_with('-') {
-        RED
+        egui::Color32::from_rgb(130, 200, 130) // under par = good = green
     } else if trimmed == "E" || trimmed == "0" {
         TEXT_DIM
     } else if trimmed.starts_with('+') || trimmed.parse::<i32>().map_or(false, |n| n > 0) {
-        egui::Color32::from_rgb(130, 200, 130)
+        RED // over par = bad = red
     } else {
         TEXT_WHITE
     }

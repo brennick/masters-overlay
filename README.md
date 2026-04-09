@@ -5,7 +5,7 @@ A lightweight, always-on-top desktop overlay that displays live leaderboard stan
 ![Build](https://github.com/brennick/masters-overlay/actions/workflows/release.yml/badge.svg)
 ![Rust](https://img.shields.io/badge/Rust-000000?style=flat&logo=rust&logoColor=white)
 
-<img width="1908" height="1061" alt="image" src="https://github.com/user-attachments/assets/b056a9c8-0357-4174-a5a8-155bba5f0bec" />
+<img alt="Masters 2026 Overlay" src="screenshot.png" width="320" />
 
 ## Download
 

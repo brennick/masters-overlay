@@ -437,6 +437,100 @@ impl eframe::App for MastersApp {
     }
 }
 
+fn make_golf_flag_icon() -> egui::IconData {
+    const S: usize = 64;
+    let mut rgba = vec![0u8; S * S * 4];
+
+    let set = |rgba: &mut Vec<u8>, x: usize, y: usize, r: u8, g: u8, b: u8, a: u8| {
+        if x < S && y < S {
+            let i = (y * S + x) * 4;
+            rgba[i] = r;
+            rgba[i + 1] = g;
+            rgba[i + 2] = b;
+            rgba[i + 3] = a;
+        }
+    };
+
+    // Fill with Masters green background (rounded circle)
+    let center = S as f32 / 2.0;
+    let radius = center - 1.0;
+    for y in 0..S {
+        for x in 0..S {
+            let dx = x as f32 - center + 0.5;
+            let dy = y as f32 - center + 0.5;
+            let dist = (dx * dx + dy * dy).sqrt();
+            if dist <= radius {
+                // Slight edge softening
+                let alpha = if dist > radius - 1.5 {
+                    ((radius - dist) / 1.5 * 255.0) as u8
+                } else {
+                    255
+                };
+                set(&mut rgba, x, y, 0, 98, 65, alpha);
+            }
+        }
+    }
+
+    // Flagpole — white vertical line, x=22, from y=10 to y=54
+    let pole_x = 22;
+    for y in 10..55 {
+        for dx in 0..2 {
+            set(&mut rgba, pole_x + dx, y, 240, 240, 240, 255);
+        }
+    }
+
+    // Flag — red triangle, from pole top-right, pointing right
+    // Top of flag at y=10, bottom at y=28, tip extends to x=48
+    let flag_top = 10.0f32;
+    let flag_bottom = 28.0f32;
+    let flag_left = (pole_x + 2) as f32;
+    let flag_tip_x = 48.0f32;
+    let flag_mid_y = (flag_top + flag_bottom) / 2.0;
+
+    for y in (flag_top as usize)..=(flag_bottom as usize) {
+        let dy = (y as f32 - flag_mid_y).abs();
+        let half_h = (flag_bottom - flag_top) / 2.0;
+        let frac = 1.0 - dy / half_h; // 0 at edges, 1 at middle
+        let row_right = flag_left + (flag_tip_x - flag_left) * frac;
+        for x in (flag_left as usize)..=(row_right as usize) {
+            // Gradient: deeper red at pole, brighter at tip
+            let t = (x as f32 - flag_left) / (flag_tip_x - flag_left);
+            let r = (200.0 + 40.0 * t) as u8;
+            let g = (40.0 + 20.0 * t) as u8;
+            let b = (40.0 + 15.0 * t) as u8;
+            set(&mut rgba, x, y, r, g, b, 255);
+        }
+    }
+
+    // Ball — small white circle at base of pole
+    let ball_cx = 30.0f32;
+    let ball_cy = 50.0f32;
+    let ball_r = 5.0f32;
+    for y in 0..S {
+        for x in 0..S {
+            let dx = x as f32 - ball_cx + 0.5;
+            let dy = y as f32 - ball_cy + 0.5;
+            let dist = (dx * dx + dy * dy).sqrt();
+            if dist <= ball_r {
+                let alpha = if dist > ball_r - 1.0 {
+                    ((ball_r - dist) / 1.0 * 255.0) as u8
+                } else {
+                    255
+                };
+                // Slight shading for depth
+                let shade = (240.0 - 20.0 * (dist / ball_r)) as u8;
+                set(&mut rgba, x, y, shade, shade, shade, alpha);
+            }
+        }
+    }
+
+    egui::IconData {
+        rgba,
+        width: S as u32,
+        height: S as u32,
+    }
+}
+
 fn main() -> eframe::Result<()> {
     let (screen_w, screen_h) = get_screen_size().unwrap_or((1920.0, 1080.0));
     let win_width = (screen_w / 8.0).max(200.0);
@@ -449,12 +543,13 @@ fn main() -> eframe::Result<()> {
             .with_always_on_top()
             .with_decorations(false)
             .with_transparent(false)
-            .with_resizable(true),
+            .with_resizable(true)
+            .with_icon(make_golf_flag_icon()),
         ..Default::default()
     };
 
     eframe::run_native(
-        "Masters Overlay",
+        "Masters 2026",
         options,
         Box::new(|cc| Ok(Box::new(MastersApp::new(cc)))),
     )

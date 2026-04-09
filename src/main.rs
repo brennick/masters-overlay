@@ -264,6 +264,21 @@ impl eframe::App for MastersApp {
                     GOLD,
                 );
 
+                // Last refresh indicator in left side of title bar
+                {
+                    let st = self.state.lock().unwrap();
+                    if let Some(last) = st.last_refresh {
+                        let elapsed = last.elapsed().as_secs();
+                        ui.painter().text(
+                            egui::pos2(title_rect.left() + 6.0, title_rect.center().y),
+                            egui::Align2::LEFT_CENTER,
+                            format!("{}s ago", elapsed),
+                            egui::FontId::proportional(10.0),
+                            TEXT_DIM,
+                        );
+                    }
+                }
+
                 // Split title bar into drag zone (left) and close button (right)
                 let close_size = 36.0;
                 let close_rect = egui::Rect::from_min_size(
@@ -388,20 +403,8 @@ impl eframe::App for MastersApp {
                     }
                 });
 
-                // Last refresh indicator + resize handle at bottom
+                // Bottom resize handle
                 let max = ui.max_rect();
-                if let Some(last) = state.last_refresh {
-                    let elapsed = last.elapsed().as_secs();
-                    ui.painter().text(
-                        egui::pos2(max.right() - 6.0, max.bottom() - 18.0),
-                        egui::Align2::RIGHT_CENTER,
-                        format!("{}s ago", elapsed),
-                        egui::FontId::proportional(9.0),
-                        TEXT_DIM,
-                    );
-                }
-
-                // Bottom resize handle (6px tall bar at the very bottom)
                 let handle_rect = egui::Rect::from_min_max(
                     egui::pos2(max.left(), max.bottom() - 6.0),
                     max.right_bottom(),

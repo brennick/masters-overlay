@@ -1,6 +1,6 @@
 # Masters 2026
 
-A lightweight, always-on-top desktop overlay that displays live leaderboard standings for The Masters golf tournament. Built in Rust with [egui](https://github.com/emilk/egui).
+A lightweight, always-on-top desktop overlay that displays live leaderboard standings for The Masters golf tournament. Built in Rust with [egui](https://github.com/emilk/egui). Runs on Windows and macOS.
 
 ![Build](https://github.com/brennick/masters-overlay/actions/workflows/release.yml/badge.svg)
 ![Rust](https://img.shields.io/badge/Rust-000000?style=flat&logo=rust&logoColor=white)
@@ -9,7 +9,10 @@ A lightweight, always-on-top desktop overlay that displays live leaderboard stan
 
 ## Download
 
-Grab the latest `masters-overlay.exe` from the [Releases](https://github.com/brennick/masters-overlay/releases/latest) page. No install required — just run it.
+Grab the latest build from the [Releases](https://github.com/brennick/masters-overlay/releases/latest) page. No install required — just run it.
+
+- **Windows**: `masters-overlay.exe`
+- **macOS**: `masters-overlay-mac`
 
 ## Features
 
@@ -35,7 +38,8 @@ Requires [Rust](https://rustup.rs/) (stable).
 
 ```sh
 cargo build --release
-./target/release/masters-overlay.exe
+./target/release/masters-overlay      # macOS/Linux
+./target/release/masters-overlay.exe  # Windows
 ```
 
 ## Data Source

@@ -533,7 +533,8 @@ fn make_golf_flag_icon() -> egui::IconData {
 
 fn main() -> eframe::Result<()> {
     let (screen_w, screen_h) = get_screen_size().unwrap_or((1920.0, 1080.0));
-    let win_width = (screen_w / 8.0).max(200.0);
+    let width_divisor = if cfg!(target_os = "macos") { 4.0 } else { 8.0 };
+    let win_width = (screen_w / width_divisor).max(200.0);
     let win_height = screen_h * 0.85;
 
     let options = eframe::NativeOptions {
@@ -575,7 +576,27 @@ fn get_screen_size() -> Option<(f32, f32)> {
     }
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(target_os = "macos")]
+fn get_screen_size() -> Option<(f32, f32)> {
+    use std::process::Command;
+    let output = Command::new("osascript")
+        .args([
+            "-e",
+            "tell application \"Finder\" to get bounds of window of desktop",
+        ])
+        .output()
+        .ok()?;
+    let text = String::from_utf8_lossy(&output.stdout);
+    // Returns "0, 0, WIDTH, HEIGHT"
+    let parts: Vec<&str> = text.trim().split(", ").collect();
+    if parts.len() == 4 {
+        Some((parts[2].parse().ok()?, parts[3].parse().ok()?))
+    } else {
+        None
+    }
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
 fn get_screen_size() -> Option<(f32, f32)> {
     None
 }
